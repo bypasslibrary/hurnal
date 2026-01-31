@@ -1,0 +1,26 @@
+name: Update CSV from Google Sheets
+
+# запуск каждые 5 минут
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch: # ручной запуск при необходимости
+
+jobs:
+  update-csv:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Download CSV from Google Sheets
+      run: |
+        wget -O data.csv "https://docs.google.com/spreadsheets/d/1lZKOyyAo56vAhCJaA5obhT5fFG4P2jnb/export?format=csv&gid=735258046"
+
+    - name: Commit and Push CSV
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add data.csv
+        git diff --cached --quiet || git commit -m "Update CSV from Google Sheets"
+        git push
