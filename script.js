@@ -1,5 +1,5 @@
 // Ссылка на Excel файл в вашем репозитории GitHub
-const excelUrl = 'https://raw.githubusercontent.com/USERNAME/REPO/main/schedule.xlsx';
+const excelUrl = 'https://github.com/bypasslibrary/hurnal/raw/refs/heads/main/schedule.xlsx';
 
 async function loadExcel() {
     try {
