@@ -2,7 +2,7 @@ name: Update schedule
 
 on:
   schedule:
-    - cron: "*/30 * * * *"   # каждые 30 минут
+    - cron: "*/5 * * * *"   # каждые 5 минут
   workflow_dispatch:
 
 permissions:
