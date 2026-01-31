@@ -2,72 +2,73 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Расписание</title>
+
 <style>
-body { font-family: Arial; padding: 20px; background: #f4f4f4; }
-select { padding: 6px; margin-right: 10px; }
-.card {
-  background: #fff;
-  padding: 12px;
-  margin: 10px 0;
-  border-radius: 8px;
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0e0e0e;
+  color: #fff;
+}
+
+header {
+  padding: 15px;
+  background: #111;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#status {
+  text-align: center;
+  padding: 10px;
+  color: #aaa;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 8px;
+  border-bottom: 1px solid #222;
+  text-align: center;
+}
+
+th {
+  background: #1a1a1a;
+}
+
+tr:hover {
+  background: #1f1f1f;
 }
 </style>
 </head>
+
 <body>
 
-<h2>Расписание</h2>
+<header>Расписание занятий</header>
+<div id="status">Загрузка данных…</div>
 
-<select id="group"></select>
-<select id="subgroup">
-  <option value="">Все подгруппы</option>
-  <option value="1">1 подгруппа</option>
-  <option value="2">2 подгруппа</option>
-</select>
+<table id="schedule" hidden>
+  <thead>
+    <tr>
+      <th>Группа</th>
+      <th>Пара</th>
+      <th>Подгруппа</th>
+      <th>Дисциплина</th>
+      <th>Ауд.</th>
+      <th>Преподаватель</th>
+      <th>Дата</th>
+      <th>День</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
 
-<div id="list"></div>
-
-<script>
-fetch("https://raw.githubusercontent.com/bypasslibrary/hurnal/main/data.json")
-  .then(r => r.json())
-  .then(data => {
-    const groupSel = document.getElementById("group");
-    const list = document.getElementById("list");
-
-    [...new Set(data.map(x => x.group))].forEach(g => {
-      const o = document.createElement("option");
-      o.value = g;
-      o.textContent = "Группа " + g;
-      groupSel.appendChild(o);
-    });
-
-    function render() {
-      list.innerHTML = "";
-      const g = groupSel.value;
-      const sg = document.getElementById("subgroup").value;
-
-      data
-        .filter(x => x.group === g)
-        .filter(x => !sg || String(x.subgroup) === sg)
-        .forEach(x => {
-          list.innerHTML += `
-            <div class="card">
-              <b>${x.weekday} • ${x.date}</b><br>
-              Пара ${x.pair} (${x.lesson})<br>
-              ${x.subject}<br>
-              ${x.teacher || ""}<br>
-              Аудитория: ${x.room || "-"}
-            </div>
-          `;
-        });
-    }
-
-    groupSel.onchange = render;
-    document.getElementById("subgroup").onchange = render;
-    groupSel.selectedIndex = 0;
-    render();
-  });
-</script>
-
+<script src="schedule.js"></script>
 </body>
 </html>
