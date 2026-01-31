@@ -1,78 +1,45 @@
-const CSV_URL =
-  "https://docs.google.com/spreadsheets/d/1lZKOyyAo56vAhCJaA5obhT5fFG4P2jnb/export?format=csv&gid=735258046";
-
-const statusEl = document.getElementById("status");
-const table = document.getElementById("schedule");
-const tbody = table.querySelector("tbody");
-
-fetch(CSV_URL)
-  .then(r => r.text())
+// Загружаем CSV (или Google Sheets в CSV)
+fetch('data.csv')
+  .then(res => res.text())
   .then(text => {
-    if (!text.trim()) {
-      statusEl.textContent = "❌ CSV пустой";
-      return;
-    }
+    const lines = text.trim().split('\n');
 
-    const rows = parseCSV(text);
-    if (rows.length < 2) {
-      statusEl.textContent = "❌ Нет данных";
-      return;
-    }
+    // Находим заголовки и их индексы
+    const headers = lines[0].split(';').map(h => h.trim());
+    const idxGroup = headers.indexOf('Группа');
+    const idxPair = headers.indexOf('Пара');
+    const idxLesson = headers.indexOf('Дисциплина');
+    const idxTeacher = headers.indexOf('Преподаватель');
+    const idxAud = headers.indexOf('Аудитория');
+    const idxSubgroup = headers.indexOf('Подгр.'); // если есть
 
-    const headers = rows[0].map(h => h.toLowerCase());
-
-    // карта столбцов по названию
-    const col = name =>
-      headers.findIndex(h => h.includes(name));
-
-    const COLS = {
-      group: col("груп"),
-      pair: col("пар"),
-      subject: col("дисцип"),
-      room: col("ауд"),
-      teacher: col("препод"),
-      date: col("дат"),
-      day: col("день"),
-      subgroup: col("подгруп"),
-    };
-
-    rows.slice(1).forEach(r => {
-      // пропуск пустых строк
-      if (r.every(c => !c.trim())) return;
-
-      const tr = document.createElement("tr");
-
-      [
-        r[COLS.group],
-        r[COLS.pair],
-        r[COLS.subgroup],
-        r[COLS.subject],
-        r[COLS.room],
-        r[COLS.teacher],
-        r[COLS.date],
-        r[COLS.day],
-      ].forEach(v => {
-        const td = document.createElement("td");
-        td.textContent = v && v.trim() ? v : "";
-        tr.appendChild(td);
-      });
-
-      tbody.appendChild(tr);
+    // Преобразуем строки в объекты
+    const schedule = lines.slice(1).map(line => {
+      const cols = line.split(';');
+      return {
+        group: cols[idxGroup] || '',
+        pair: cols[idxPair] || '',
+        lesson: cols[idxLesson] || '',
+        teacher: cols[idxTeacher] || '',
+        aud: cols[idxAud] || '',
+        subgroup: cols[idxSubgroup] || ''
+      };
     });
 
-    statusEl.textContent = "✔ Расписание загружено корректно";
-    table.hidden = false;
-  })
-  .catch(err => {
-    statusEl.textContent = "❌ Ошибка загрузки";
-    console.error(err);
+    // Пример: выводим в консоль
+    console.log(schedule);
+
+    // Здесь можно рендерить расписание на странице
+    renderSchedule(schedule);
   });
 
-function parseCSV(text) {
-  return text
-    .split("\n")
-    .map(row =>
-      row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
-         .map(c => c.replace(/^"|"$/g, "").trim())
-    );
+// Функция рендеринга (пример)
+function renderSchedule(schedule) {
+  const container = document.getElementById('schedule');
+  container.innerHTML = '';
+  schedule.forEach(item => {
+    const div = document.createElement('div');
+    div.textContent = `${item.group} | ${item.pair} | ${item.lesson} | ${item.teacher} | ${item.aud}`;
+    container.appendChild(div);
+  });
 }
