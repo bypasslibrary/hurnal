@@ -1,75 +1,71 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Таблица с GitHub CSV</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #f5f5f5;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px 12px;
-      text-align: left;
-    }
-    th {
-      background: #007acc;
-      color: #fff;
-    }
-    tr:nth-child(even) {
-      background: #f0f0f0;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Расписание</title>
+<style>
+body { font-family: Arial; padding: 20px; background: #f4f4f4; }
+select { padding: 6px; margin-right: 10px; }
+.card {
+  background: #fff;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+}
+</style>
 </head>
 <body>
 
-<h2>Данные из Google Sheets (через GitHub CSV)</h2>
+<h2>Расписание</h2>
 
-<table id="myTable">
-  <thead></thead>
-  <tbody></tbody>
-</table>
+<select id="group"></select>
+<select id="subgroup">
+  <option value="">Все подгруппы</option>
+  <option value="1">1 подгруппа</option>
+  <option value="2">2 подгруппа</option>
+</select>
+
+<div id="list"></div>
 
 <script>
-const csvUrl = "https://raw.githubusercontent.com/bypasslibrary/hurnal/refs/heads/main/data.csv"; // <-- вставь сюда свою ссылку
+fetch("https://raw.githubusercontent.com/bypasslibrary/hurnal/main/data.json")
+  .then(r => r.json())
+  .then(data => {
+    const groupSel = document.getElementById("group");
+    const list = document.getElementById("list");
 
-fetch(csvUrl)
-  .then(res => res.text())
-  .then(csvText => {
-    const rows = csvText.trim().split("\n").map(r => r.split(","));
-    const tableHead = document.querySelector("#myTable thead");
-    const tableBody = document.querySelector("#myTable tbody");
-
-    // создаём заголовок таблицы из первой строки CSV
-    const headerRow = document.createElement("tr");
-    rows[0].forEach(header => {
-      const th = document.createElement("th");
-      th.textContent = header;
-      headerRow.appendChild(th);
+    [...new Set(data.map(x => x.group))].forEach(g => {
+      const o = document.createElement("option");
+      o.value = g;
+      o.textContent = "Группа " + g;
+      groupSel.appendChild(o);
     });
-    tableHead.appendChild(headerRow);
 
-    // создаём тело таблицы из остальных строк
-    rows.slice(1).forEach(row => {
-      const tr = document.createElement("tr");
-      row.forEach(cell => {
-        const td = document.createElement("td");
-        td.textContent = cell;
-        tr.appendChild(td);
-      });
-      tableBody.appendChild(tr);
-    });
-  })
-  .catch(err => {
-    console.error("Ошибка загрузки CSV:", err);
+    function render() {
+      list.innerHTML = "";
+      const g = groupSel.value;
+      const sg = document.getElementById("subgroup").value;
+
+      data
+        .filter(x => x.group === g)
+        .filter(x => !sg || String(x.subgroup) === sg)
+        .forEach(x => {
+          list.innerHTML += `
+            <div class="card">
+              <b>${x.weekday} • ${x.date}</b><br>
+              Пара ${x.pair} (${x.lesson})<br>
+              ${x.subject}<br>
+              ${x.teacher || ""}<br>
+              Аудитория: ${x.room || "-"}
+            </div>
+          `;
+        });
+    }
+
+    groupSel.onchange = render;
+    document.getElementById("subgroup").onchange = render;
+    groupSel.selectedIndex = 0;
+    render();
   });
 </script>
 
