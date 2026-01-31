@@ -9,42 +9,58 @@ fetch(CSV_URL)
   .then(r => r.text())
   .then(text => {
     if (!text.trim()) {
-      statusEl.textContent = "❌ CSV пустой или недоступен";
+      statusEl.textContent = "❌ CSV пустой";
       return;
     }
 
     const rows = parseCSV(text);
-
     if (rows.length < 2) {
       statusEl.textContent = "❌ Нет данных";
       return;
     }
 
-    // первая строка — заголовки
+    const headers = rows[0].map(h => h.toLowerCase());
+
+    // карта столбцов по названию
+    const col = name =>
+      headers.findIndex(h => h.includes(name));
+
+    const COLS = {
+      group: col("груп"),
+      pair: col("пар"),
+      subject: col("дисцип"),
+      room: col("ауд"),
+      teacher: col("препод"),
+      date: col("дат"),
+      day: col("день"),
+      subgroup: col("подгруп"),
+    };
+
     rows.slice(1).forEach(r => {
-      if (r.length < 8) return;
+      // пропуск пустых строк
+      if (r.every(c => !c.trim())) return;
 
       const tr = document.createElement("tr");
 
       [
-        r[0], // Группа
-        r[1], // Пара
-        r[8] || "—", // Подгруппа
-        r[3], // Дисциплина
-        r[4], // Аудитория
-        r[5], // Преподаватель
-        r[6], // Дата
-        r[7], // День недели
+        r[COLS.group],
+        r[COLS.pair],
+        r[COLS.subgroup],
+        r[COLS.subject],
+        r[COLS.room],
+        r[COLS.teacher],
+        r[COLS.date],
+        r[COLS.day],
       ].forEach(v => {
         const td = document.createElement("td");
-        td.textContent = v || "—";
+        td.textContent = v && v.trim() ? v : "";
         tr.appendChild(td);
       });
 
       tbody.appendChild(tr);
     });
 
-    statusEl.textContent = "✔ Расписание загружено";
+    statusEl.textContent = "✔ Расписание загружено корректно";
     table.hidden = false;
   })
   .catch(err => {
