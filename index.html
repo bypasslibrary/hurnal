@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Расписание (через Google Sheets)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 { text-align: center; }
+    .note {
+      max-width: 800px;
+      margin: 0 auto 20px;
+      background: #fff3cd;
+      border: 1px solid #ffe69c;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    iframe {
+      width: 100%;
+      height: 80vh;
+      border: none;
+      border-radius: 12px;
+      background: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+  </style>
+</head>
+<body>
+
+<h1>Расписание занятий</h1>
+
+<div class="note">
+  <strong>Важно:</strong><br>
+  Google Sheets <u>НЕ позволяет</u> безопасно читать данные по CSV/JS,
+  если таблица опубликована неправильно или использует сложную структуру.
+  <br><br>
+  Зато <b>iframe — это 100% рабочий и официальный способ</b>.
+  Он не ломается на GitHub Pages и не требует JavaScript.
+</div>
+
+<!--
+  Как получить iframe:
+  1. Google Sheets → Файл → Поделиться → Опубликовать в интернете
+  2. Вкладка "Встроить"
+  3. Скопировать iframe и заменить src ниже
+-->
+
+<iframe
+  src="https://docs.google.com/spreadsheets/d/e/2PACX-1vStlZfWItBb9azUff-ROh6x-XXzLX5osMUC6Mqy_tdv23EHtLf2T9K2nXLoHCLUwo4h0nOhpDa4T7-3/pubhtml?widget=true&amp;headers=false">
+</iframe>
+
+</body>
+</html>
