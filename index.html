@@ -1,49 +1,65 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Таблица</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Расписание групп</title>
+
+<!-- Подключаем стиль Google из resources -->
+<link rel="stylesheet" href="resources/sheet.css">
 
 <style>
-html, body {
-  margin: 0;
-  padding: 0;
-  background: #0e0e11;
-  color: #eaeaf0;
-  font-family: system-ui, sans-serif;
-}
-
-#sheet {
+/* Контейнер для таблицы */
+#sheet-container {
   padding: 20px;
+  overflow-x: auto;
+  background: #0e0e11;
 }
 
-/* iframe от Google — локальный, безопасный */
-#sheet iframe {
-  width: 100%;
-  min-height: 80vh;
-  border: none;
+/* Фиксируем шапку таблицы */
+#sheet-container table thead th {
+  position: sticky;
+  top: 0;
   background: #fff;
+  z-index: 2;
+}
+
+/* Подгоняем таблицу под экран */
+#sheet-container table {
+  width: 100%;
+  border-collapse: collapse;
 }
 </style>
 </head>
 
 <body>
 
-<div id="sheet">Загрузка таблицы…</div>
+<h1 style="text-align:center; color:#fff;">Расписание групп</h1>
+
+<div id="sheet-container">
+  Загрузка таблицы…
+</div>
 
 <script>
 fetch('sheet.html')
   .then(r => r.text())
   .then(html => {
     const doc = new DOMParser().parseFromString(html, 'text/html');
+    const table = doc.querySelector('table');
 
-    // ВАЖНО: вставляем body целиком
-    document.getElementById('sheet').innerHTML = doc.body.innerHTML;
+    if (!table) {
+      document.getElementById('sheet-container').innerText =
+        'Ошибка: таблица не найдена';
+      return;
+    }
+
+    const container = document.getElementById('sheet-container');
+    container.innerHTML = '';
+    container.appendChild(table);
   })
   .catch(err => {
-    document.getElementById('sheet').innerText =
-      'Ошибка загрузки sheet.html';
+    document.getElementById('sheet-container').innerText =
+      'Ошибка загрузки таблицы';
     console.error(err);
   });
 </script>
