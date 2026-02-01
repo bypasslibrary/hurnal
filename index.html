@@ -5,12 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Расписание групп</title>
 
-<!-- Тёмная тема и базовые стили -->
 <style>
 body {
   margin: 0;
   padding: 0;
-  background: #0e0e11;
+  background: #0e0e11; /* тёмный фон страницы */
   font-family: "Segoe UI", Roboto, Arial, sans-serif;
   color: #fff;
   display: flex;
@@ -26,7 +25,7 @@ h1 {
 #pdf-container {
   width: 95%;
   height: 80vh;
-  overflow: auto; /* вертикальная прокрутка */
+  overflow: auto; /* вертикальная и горизонтальная прокрутка */
   border: 1px solid #444;
   background: #0e0e11;
   display: flex;
@@ -52,25 +51,30 @@ canvas {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.10.489/pdf.min.js"></script>
 
 <script>
-// Ссылка на PDF (должен лежать в том же репозитории)
-const url = 'Расписание.pdf';
+// Контейнер для страниц PDF
 const container = document.getElementById('pdf-container');
 
-// worker pdf.js
+// Путь к локальному PDF (лежит рядом с index.html)
+const url = 'Расписание.pdf';
+
+// Указываем worker pdf.js
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.10.489/pdf.worker.min.js';
 
 // Загружаем PDF
 pdfjsLib.getDocument(url).promise.then(pdf => {
   for(let i = 1; i <= pdf.numPages; i++){
     pdf.getPage(i).then(page => {
-      const scale = 1.2; // масштаб, можно подгонять
+      const scale = 1.2; // масштаб страницы
       const viewport = page.getViewport({scale});
+
+      // Создаём canvas для каждой страницы
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       canvas.height = viewport.height;
       canvas.width = viewport.width;
       container.appendChild(canvas);
 
+      // Рендерим страницу на canvas
       page.render({
         canvasContext: ctx,
         viewport: viewport
