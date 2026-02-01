@@ -9,14 +9,27 @@
 <link rel="stylesheet" href="resources/sheet.css">
 
 <style>
-/* Контейнер для таблицы */
+/* ===== Контейнер таблицы ===== */
 #sheet-container {
-  padding: 20px;
-  overflow-x: auto;
+  padding: 10px;
   background: #0e0e11;
+  
+  /* Горизонтальный и вертикальный скролл */
+  overflow-x: auto;
+  overflow-y: auto;
+
+  /* Ограничиваем высоту контейнера */
+  max-height: 80vh;
+  border: 1px solid #444;
 }
 
-/* Фиксируем шапку таблицы */
+/* Таблица растягивается по содержимому */
+#sheet-container table {
+  width: max-content;  /* не сжимать таблицу */
+  border-collapse: collapse;
+}
+
+/* Фиксируем шапку */
 #sheet-container table thead th {
   position: sticky;
   top: 0;
@@ -24,17 +37,34 @@
   z-index: 2;
 }
 
-/* Подгоняем таблицу под экран */
-#sheet-container table {
-  width: 100%;
-  border-collapse: collapse;
+/* Фиксируем первый столбец */
+#sheet-container table th:first-child,
+#sheet-container table td:first-child {
+  position: sticky;
+  left: 0;
+  background: #fff;
+  z-index: 3;
+}
+
+/* Цвет текста и общий стиль */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, sans-serif;
+  background: #0e0e11;
+  color: #eaeaf0;
+}
+
+h1 {
+  text-align: center;
+  color: #fff;
 }
 </style>
 </head>
 
 <body>
 
-<h1 style="text-align:center; color:#fff;">Расписание групп</h1>
+<h1>Расписание групп</h1>
 
 <div id="sheet-container">
   Загрузка таблицы…
