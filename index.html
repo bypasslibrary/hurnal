@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Таблица</title>
 
 <style>
@@ -17,6 +18,7 @@ html, body {
   overflow-x: auto;
 }
 
+/* таблица */
 table {
   border-collapse: collapse;
   background: #fff;
@@ -31,16 +33,31 @@ td, th {
 
 <body>
 
-<div id="sheet">Загрузка…</div>
+<div id="sheet">Загрузка таблицы…</div>
 
 <script>
-fetch('./sheet.html')
-  .then(r => r.text())
+fetch('sheet.html')
+  .then(r => {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.text();
+  })
   .then(html => {
     const doc = new DOMParser().parseFromString(html, 'text/html');
     const table = doc.querySelector('table');
+
+    if (!table) {
+      document.getElementById('sheet').innerText =
+        'Таблица не найдена в sheet.html';
+      return;
+    }
+
     document.getElementById('sheet').innerHTML = '';
     document.getElementById('sheet').appendChild(table);
+  })
+  .catch(e => {
+    document.getElementById('sheet').innerText =
+      'Ошибка загрузки sheet.html';
+    console.error(e);
   });
 </script>
 
