@@ -5,77 +5,58 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Расписание групп</title>
 
-<!-- Подключаем стиль Google из resources -->
+<!-- Подключаем оригинальный стиль Google из папки resources -->
 <link rel="stylesheet" href="resources/sheet.css">
 
 <style>
-/* ===== Контейнер таблицы ===== */
-#sheet-container {
+/* ===== Контейнер таблицы с прокруткой ===== */
+#sheet-wrapper {
+  max-height: 80vh;      /* ограничиваем высоту контейнера */
+  overflow-x: auto;      /* горизонтальный скролл */
+  overflow-y: auto;      /* вертикальный скролл */
+  background: #0e0e11;   /* тёмный фон */
   padding: 10px;
-  background: #0e0e11;
-  overflow-x: auto;
-  overflow-y: auto;
-  max-height: 80vh;
   border: 1px solid #444;
-  font-family: "Segoe UI", Roboto, Arial, sans-serif;
-  font-size: 14px;
-  color: #f0f0f0;
 }
 
-/* Таблица растягивается по содержимому */
-#sheet-container table {
-  width: max-content;  
-  border-collapse: collapse;
-  background: #1a1a1a;
-}
-
-/* Стиль ячеек */
-#sheet-container table th,
-#sheet-container table td {
-  padding: 6px 10px !important; /* override встроенных стилей Google */
-  border: 1px solid #555 !important;
-  color: #f0f0f0 !important;
-  background: #1a1a1a !important;
-  vertical-align: middle !important;
-  text-align: center !important;
-  font-weight: 500 !important;
-}
-
-/* Фиксируем шапку */
-#sheet-container table thead th {
+/* Фиксируем шапку таблицы */
+#sheet-wrapper table thead th {
   position: sticky;
   top: 0;
-  background: #2c2c2c !important;
   z-index: 2;
+  background: inherit; /* берёт оригинальный фон */
 }
 
 /* Фиксируем первый столбец */
-#sheet-container table th:first-child,
-#sheet-container table td:first-child {
+#sheet-wrapper table th:first-child,
+#sheet-wrapper table td:first-child {
   position: sticky;
   left: 0;
-  background: #2c2c2c !important;
   z-index: 3;
+  background: inherit; /* берёт оригинальный фон */
 }
 
-/* Цвет ссылок (если есть) */
-#sheet-container table a {
-  color: #6fa8dc !important;
-  text-decoration: none;
+/* Убираем margin у таблицы */
+#sheet-wrapper table {
+  border-collapse: collapse;
+}
+
+/* Опционально делаем плавный скролл */
+#sheet-wrapper {
+  scroll-behavior: smooth;
 }
 
 /* Заголовок страницы */
 body {
   margin: 0;
   padding: 0;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
   background: #0e0e11;
   color: #fff;
-  font-family: "Segoe UI", Roboto, Arial, sans-serif;
 }
 
 h1 {
   text-align: center;
-  color: #fff;
   margin: 20px 0;
 }
 </style>
@@ -85,30 +66,23 @@ h1 {
 
 <h1>Расписание групп</h1>
 
-<div id="sheet-container">
+<div id="sheet-wrapper">
   Загрузка таблицы…
 </div>
 
 <script>
 fetch('sheet.html')
-  .then(r => r.text())
+  .then(response => response.text())
   .then(html => {
-    const doc = new DOMParser().parseFromString(html, 'text/html');
-    const table = doc.querySelector('table');
+    const container = document.getElementById('sheet-wrapper');
+    
+    // Вставляем HTML из Google Sheets целиком
+    container.innerHTML = html;
 
-    if (!table) {
-      document.getElementById('sheet-container').innerText =
-        'Ошибка: таблица не найдена';
-      return;
-    }
-
-    const container = document.getElementById('sheet-container');
-    container.innerHTML = '';
-    container.appendChild(table);
+    // После вставки можно дополнительно фиксировать шапку и первый столбец через JS, если нужно
   })
   .catch(err => {
-    document.getElementById('sheet-container').innerText =
-      'Ошибка загрузки таблицы';
+    document.getElementById('sheet-wrapper').innerText = 'Ошибка загрузки таблицы';
     console.error(err);
   });
 </script>
