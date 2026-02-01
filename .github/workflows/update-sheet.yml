@@ -1,0 +1,28 @@
+name: Update Google Sheet
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"   # каждые 30 минут
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Download sheet HTML
+        run: |
+          curl -L \
+          "https://docs.google.com/spreadsheets/d/e/2PACX-1vRyaHN2X9J0J8bX08yEV5upEGJFVKtLyekNlfTZGBSBzlKQL5P4Qwo3BEnHeR2B-A/pubhtml?gid=735258046&single=true" \
+          -o sheet.html
+
+      - name: Commit & push if changed
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add sheet.html
+          git diff --cached --quiet || git commit -m "Update sheet"
+          git push
