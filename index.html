@@ -6,47 +6,24 @@
 <title>Таблица</title>
 
 <style>
-/* ===== BASE ===== */
 html, body {
   margin: 0;
   padding: 0;
   background: #0e0e11;
   color: #eaeaf0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  font-family: system-ui, sans-serif;
 }
 
-/* ===== CONTAINER ===== */
 #sheet {
   padding: 20px;
-  overflow-x: auto;
 }
 
-/* ===== TABLE ===== */
-table {
-  border-collapse: collapse;
-  background: #ffffff;
-  color: #000000;
-}
-
-td, th {
-  padding: 4px 6px;
-  vertical-align: middle;
-  white-space: nowrap;
-}
-
-/* фикс шапки */
-thead th {
-  position: sticky;
-  top: 0;
-  background: #ffffff;
-  z-index: 2;
-}
-
-/* адаптив */
-@media (max-width: 768px) {
-  #sheet {
-    padding: 10px;
-  }
+/* iframe от Google — локальный, безопасный */
+#sheet iframe {
+  width: 100%;
+  min-height: 80vh;
+  border: none;
+  background: #fff;
 }
 </style>
 </head>
@@ -57,23 +34,12 @@ thead th {
 
 <script>
 fetch('sheet.html')
-  .then(r => {
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    return r.text();
-  })
+  .then(r => r.text())
   .then(html => {
     const doc = new DOMParser().parseFromString(html, 'text/html');
-    const table = doc.querySelector('table');
 
-    if (!table) {
-      document.getElementById('sheet').innerText =
-        'Таблица в sheet.html не найдена';
-      return;
-    }
-
-    const container = document.getElementById('sheet');
-    container.innerHTML = '';
-    container.appendChild(table);
+    // ВАЖНО: вставляем body целиком
+    document.getElementById('sheet').innerHTML = doc.body.innerHTML;
   })
   .catch(err => {
     document.getElementById('sheet').innerText =
