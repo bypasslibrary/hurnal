@@ -5,18 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Расписание групп</title>
 
-<!-- Подключаем оригинальный стиль Google из папки resources -->
+<!-- Подключаем оригинальный стиль Google -->
 <link rel="stylesheet" href="resources/sheet.css">
 
 <style>
-/* ===== Контейнер таблицы с прокруткой ===== */
+/* ===== Контейнер таблицы ===== */
 #sheet-wrapper {
-  max-height: 80vh;      /* ограничиваем высоту контейнера */
-  overflow-x: auto;      /* горизонтальный скролл */
-  overflow-y: auto;      /* вертикальный скролл */
-  background: #0e0e11;   /* тёмный фон */
+  max-height: 80vh;        /* ограничиваем высоту */
+  overflow-x: auto;        /* горизонтальный скролл */
+  overflow-y: auto;        /* вертикальный скролл */
+  background: #0e0e11;     /* тёмный фон */
   padding: 10px;
   border: 1px solid #444;
+  scroll-behavior: smooth;
 }
 
 /* Фиксируем шапку таблицы */
@@ -24,7 +25,7 @@
   position: sticky;
   top: 0;
   z-index: 2;
-  background: inherit; /* берёт оригинальный фон */
+  background: inherit;  /* берём фон из Google стилей */
 }
 
 /* Фиксируем первый столбец */
@@ -33,17 +34,12 @@
   position: sticky;
   left: 0;
   z-index: 3;
-  background: inherit; /* берёт оригинальный фон */
+  background: inherit;  /* берём фон из Google стилей */
 }
 
-/* Убираем margin у таблицы */
+/* Убираем margin и collapse border */
 #sheet-wrapper table {
   border-collapse: collapse;
-}
-
-/* Опционально делаем плавный скролл */
-#sheet-wrapper {
-  scroll-behavior: smooth;
 }
 
 /* Заголовок страницы */
@@ -76,10 +72,8 @@ fetch('sheet.html')
   .then(html => {
     const container = document.getElementById('sheet-wrapper');
     
-    // Вставляем HTML из Google Sheets целиком
+    // Вставляем HTML Google Sheets целиком, без изменений
     container.innerHTML = html;
-
-    // После вставки можно дополнительно фиксировать шапку и первый столбец через JS, если нужно
   })
   .catch(err => {
     document.getElementById('sheet-wrapper').innerText = 'Ошибка загрузки таблицы';
