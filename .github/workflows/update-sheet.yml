@@ -17,17 +17,19 @@ jobs:
         run: |
           curl -L "https://docs.google.com/spreadsheets/d/1FcEVDrkvj4DBugXA4Cz5a5mApTsZ4ZEc/export?format=zip&id=1FcEVDrkvj4DBugXA4Cz5a5mApTsZ4ZEc" -o sheet.zip
 
-      - name: Unzip ZIP with proper encoding
+      - name: Unzip and move files safely
         run: |
-          # unzip с кодировкой CP1251 для кириллицы
-          unzip -o -O CP1251 sheet.zip -d tmp
+          unzip -o sheet.zip -d tmp
           mkdir -p resources
-          
-          # перемещаем HTML файл и CSS
-          mv tmp/Расписание\ групп.html sheet.html
+
+          # Находим первый HTML файл в tmp/ (не важно, как он закодирован)
+          HTML_FILE=$(find tmp -maxdepth 1 -type f -name "*.html" | head -n 1)
+          mv "$HTML_FILE" sheet.html
+
+          # Копируем CSS из папки resources
           mv tmp/resources/* resources/
-          
-          # чистим временные файлы
+
+          # Очистка
           rm -rf tmp sheet.zip
 
       - name: Commit and push if changed
