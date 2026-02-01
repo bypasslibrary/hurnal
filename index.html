@@ -5,11 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Расписание групп</title>
 
+<!-- Тёмная тема и базовые стили -->
 <style>
 body {
   margin: 0;
   padding: 0;
-  background: #0e0e11;  /* тёмный фон страницы */
+  background: #0e0e11;
   font-family: "Segoe UI", Roboto, Arial, sans-serif;
   color: #fff;
   display: flex;
@@ -22,10 +23,21 @@ h1 {
   text-align: center;
 }
 
-.pdf-container {
+#pdf-container {
   width: 95%;
-  height: 80vh;       /* ограничиваем высоту */
+  height: 80vh;
+  overflow: auto; /* вертикальная прокрутка */
   border: 1px solid #444;
+  background: #0e0e11;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px; /* расстояние между страницами */
+}
+
+canvas {
+  border: 1px solid #222;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 </style>
 </head>
@@ -34,9 +46,41 @@ h1 {
 
 <h1>Расписание групп</h1>
 
-<div class="pdf-container">
-  <embed src="Расписание.pdf" type="application/pdf" width="100%" height="100%">
-</div>
+<div id="pdf-container"></div>
+
+<!-- Подключаем pdf.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.10.489/pdf.min.js"></script>
+
+<script>
+// Ссылка на PDF (должен лежать в том же репозитории)
+const url = 'Расписание.pdf';
+const container = document.getElementById('pdf-container');
+
+// worker pdf.js
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.10.489/pdf.worker.min.js';
+
+// Загружаем PDF
+pdfjsLib.getDocument(url).promise.then(pdf => {
+  for(let i = 1; i <= pdf.numPages; i++){
+    pdf.getPage(i).then(page => {
+      const scale = 1.2; // масштаб, можно подгонять
+      const viewport = page.getViewport({scale});
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+      container.appendChild(canvas);
+
+      page.render({
+        canvasContext: ctx,
+        viewport: viewport
+      });
+    });
+  }
+}).catch(err => {
+  container.innerHTML = '<p style="color:red;">Ошибка загрузки PDF: ' + err.message + '</p>';
+});
+</script>
 
 </body>
 </html>
