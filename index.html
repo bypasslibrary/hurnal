@@ -13,27 +13,39 @@
 #sheet-container {
   padding: 10px;
   background: #0e0e11;
-  
-  /* Горизонтальный и вертикальный скролл */
   overflow-x: auto;
   overflow-y: auto;
-
-  /* Ограничиваем высоту контейнера */
   max-height: 80vh;
   border: 1px solid #444;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 14px;
+  color: #f0f0f0;
 }
 
 /* Таблица растягивается по содержимому */
 #sheet-container table {
-  width: max-content;  /* не сжимать таблицу */
+  width: max-content;  
   border-collapse: collapse;
+  background: #1a1a1a;
+}
+
+/* Стиль ячеек */
+#sheet-container table th,
+#sheet-container table td {
+  padding: 6px 10px !important; /* override встроенных стилей Google */
+  border: 1px solid #555 !important;
+  color: #f0f0f0 !important;
+  background: #1a1a1a !important;
+  vertical-align: middle !important;
+  text-align: center !important;
+  font-weight: 500 !important;
 }
 
 /* Фиксируем шапку */
 #sheet-container table thead th {
   position: sticky;
   top: 0;
-  background: #fff;
+  background: #2c2c2c !important;
   z-index: 2;
 }
 
@@ -42,22 +54,29 @@
 #sheet-container table td:first-child {
   position: sticky;
   left: 0;
-  background: #fff;
+  background: #2c2c2c !important;
   z-index: 3;
 }
 
-/* Цвет текста и общий стиль */
+/* Цвет ссылок (если есть) */
+#sheet-container table a {
+  color: #6fa8dc !important;
+  text-decoration: none;
+}
+
+/* Заголовок страницы */
 body {
   margin: 0;
   padding: 0;
-  font-family: system-ui, sans-serif;
   background: #0e0e11;
-  color: #eaeaf0;
+  color: #fff;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
 }
 
 h1 {
   text-align: center;
   color: #fff;
+  margin: 20px 0;
 }
 </style>
 </head>
